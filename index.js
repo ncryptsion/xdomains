@@ -75,9 +75,9 @@
     const mMR = await merkleMap(args[0])
     const sFR = await sdFinder(args[0])
     const results = unique([...dR, ...mMR, ...sFR])
+    
     if(results.length){
         for( const subdomain of results ) log(subdomain)
-
         log(`${results.length} subdomains found.`)
         fs.writeFileSync(`${args[1]}.txt`, results.join("\n"), "utf8")
         log(`Results has been saved to ${args[1]}.txt`)

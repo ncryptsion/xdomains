@@ -1,5 +1,5 @@
 # XDomains
-**Website subdomains discovery that leverages 3rd party APIs.**
+Website subdomains discovery that leverages 3rd party APIs.
 
 # ⚙️ Installations
 ## Github
