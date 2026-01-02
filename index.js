@@ -13,19 +13,19 @@
     const unique = (arr)=>[...new Set(arr)]
     const log = (message)=>{console.log(`${chalk.greenBright("[*]")} ${message}`)}
 
-    // const hostedScan = async(domain)=>{ // Too fucking slow.
-    //     const response = await ky.post("https://api.hostedscan.com/discover/domains", {
-    //         headers: {
-    //             referer: "https://hostedscan.com/",
-    //             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.35/36 Safari/537.36"
-    //         },
-    //         json: {
-    //             target: domain
-    //         },
-    //         timeout: 99999
-    //     }).json()
-    //     return response.data.domains
-    // }
+    const hostedScan = async(domain)=>{ // Special
+        const response = await ky.post("https://api.hostedscan.com/discover/domains", {
+            headers: {
+                referer: "https://hostedscan.com/",
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.6998.35/36 Safari/537.36"
+            },
+            json: {
+                target: domain
+            },
+            timeout: 99999
+        }).json()
+        return response.data.domains
+    }
 
     const devina = async(domain)=>{
         const response = await ky.post("https://devina.io/api/subdomain-finder", {
@@ -66,15 +66,17 @@
 
     // Main
     if(!args[0] || !args[1]){
-        console.log("usage: node index.js <domain> <outputName>")
+        console.log("usage: node index.js <domain> <outputName> <full>")
         process.exit()
     }
 
+    if(args[2]) log("Will be using all APIs.")
     log("Scanning the domain for subdomains...")
     const dR = await devina(args[0])
     const mMR = await merkleMap(args[0])
     const sFR = await sdFinder(args[0])
-    const results = unique([...dR, ...mMR, ...sFR])
+    const hSR = args[2] ? await hostedScan(args[0]) : []
+    const results = unique([...dR, ...mMR, ...sFR, ...hSR])
     
     if(results.length){
         for( const subdomain of results ) log(subdomain)
